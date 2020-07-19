@@ -11,12 +11,12 @@ Widget _flightShuttleBuilder(
     BuildContext toHeroContext,
     ) {
   Hero hero = toHeroContext.widget as Hero;
-  Text text = hero.child as Text;
+  dynamic text = hero.child;
 
   return Material(
     color: Colors.transparent,
     child: AutoSizeText(
-      text.data,
+      (text as dynamic).data,
       maxLines: text.maxLines,
       textScaleFactor: 0.5,
       style: text.style.merge(TextStyle(
@@ -34,15 +34,23 @@ Widget _buildText(
       int maxLines,
       TextOverflow overflow,
       String tag,
+      bool autosize,
     }) {
 
-  final wText = Text(
+  final wText = !(autosize ?? false) ? Text(
+    text,
+    maxLines: maxLines,
+    overflow: overflow,
+    style: style,
+    textAlign: textAlign,
+  ) : AutoSizeText(
     text,
     maxLines: maxLines,
     overflow: overflow,
     style: style,
     textAlign: textAlign,
   );
+
   return tag != null ? Hero(
     tag: tag,
     flightShuttleBuilder: _flightShuttleBuilder,
@@ -141,6 +149,7 @@ class TitleText extends StatelessWidget {
   final EdgeInsets padding;
   final double width;
   final String tag;
+  final bool autosize;
 
   const TitleText(this.text, {
     Key key,
@@ -151,6 +160,7 @@ class TitleText extends StatelessWidget {
     this.padding,
     this.width,
     this.tag,
+    this.autosize,
   }) : super(key: key);
 
   @override
@@ -160,6 +170,7 @@ class TitleText extends StatelessWidget {
       child: _buildText(
         text,
         tag: tag,
+        autosize: autosize,
         maxLines: maxLines,
         overflow: overflow,
         style: MyTextStyle.subtitle.merge(style),

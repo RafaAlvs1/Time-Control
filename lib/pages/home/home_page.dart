@@ -1,12 +1,7 @@
-import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
-import 'package:time_control/components/buttons/my_buttons.dart';
-import 'package:time_control/components/card/my_card.dart';
 import 'package:time_control/pages/home/bottom_bar_view.dart';
+import 'package:time_control/pages/home/last_tasks_page.dart';
 
 import 'nova_tarefa_view.dart';
 
@@ -30,18 +25,27 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomBarView(
         usuario: widget.usuario,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            _buildCardTask(),
-          ],
-        ),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverPadding(
+            padding: const EdgeInsets.all(8),
+            sliver: SliverToBoxAdapter(
+              child: _buildCardTask(),
+            ),
+          ),
+          _buildLastTaks(),
+        ],
       ),
     );
   }
 
   Widget _buildCardTask() {
     return Contador();
+  }
+
+  Widget _buildLastTaks() {
+    return LastTasksPage(
+      usuario: widget.usuario,
+    );
   }
 }

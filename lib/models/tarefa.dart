@@ -20,6 +20,7 @@ class Tarefa {
   static Stream<List<Tarefa>> lista(String uid) {
     return _tarefas
         .where('uid', isEqualTo: uid)
+        .orderBy('criadoEm', descending: true)
         .snapshots()
         .map((QuerySnapshot event) => event.documents.map((DocumentSnapshot snapshot) => Tarefa.fromDoc(snapshot)).toList())
     ;

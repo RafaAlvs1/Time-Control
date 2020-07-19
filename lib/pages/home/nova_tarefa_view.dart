@@ -21,13 +21,17 @@ class TimerCustom extends ChangeNotifier {
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
-  void start() {
+  void start([Tarefa tarefa]) {
     const oneSec = const Duration(seconds: 1);
-    _tarefa = Tarefa(
-      nome: 'TESTE',
-      criadoEm: Timestamp.now(),
-    );
-    _tarefa.save();
+    if (tarefa != null) {
+      _tarefa = tarefa;
+    } else {
+      _tarefa = Tarefa(
+        nome: 'TESTE',
+        criadoEm: Timestamp.now(),
+      );
+      _tarefa.save();
+    }
     notifyListeners();
     _timer = Timer.periodic(oneSec, (Timer timer) => notifyListeners());
   }
@@ -48,9 +52,13 @@ class TimerCustom extends ChangeNotifier {
 
 class Contador extends AnimatedWidget {
   TimerCustom timer;
+  final Tarefa tarefa;
 
-  Contador() : super(listenable: TimerCustom()) {
+  Contador([this.tarefa]) : super(listenable: TimerCustom()) {
     this.timer = this.listenable;
+    if (tarefa != null) {
+      timer.start(tarefa);
+    }
   }
 
   @override

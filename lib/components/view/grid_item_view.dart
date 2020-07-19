@@ -33,7 +33,9 @@ class GridItemView extends StatelessWidget {
             child: TitleText(
               labelText ?? '',
               tag: labelTag,
-              maxLines: 2,
+              autosize: true,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 22.0,

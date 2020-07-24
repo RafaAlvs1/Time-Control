@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_control/models/tarefa.dart';
-import 'package:time_control/pages/home/task_item_view.dart';
+
+import 'task_item_view.dart';
 
 class LastTasksPage extends StatelessWidget {
   final List<Tarefa> tarefas;

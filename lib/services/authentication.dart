@@ -5,18 +5,18 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class Auth {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  final CloudFunctions fns = CloudFunctions.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final CloudFunctions _fns = CloudFunctions.instance;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 //  final facebookLogin = FacebookLogin();
 
-  Future<FirebaseUser> currentUser() => auth.currentUser();
+  Future<FirebaseUser> currentUser() => _auth.currentUser();
 
-  Stream<FirebaseUser> get state => auth.onAuthStateChanged;
+  Stream<FirebaseUser> get state => _auth.onAuthStateChanged;
 
   Future<bool> signIn({@required String email, @required String password}) async {
-    return auth.signInWithEmailAndPassword(email: email, password: password).then((authResult) => authResult != null);
+    return _auth.signInWithEmailAndPassword(email: email, password: password).then((authResult) => authResult != null);
   }
 
   Future<AuthResult> signInGoogle() async {
@@ -51,11 +51,11 @@ class Auth {
 
   Future<AuthResult> signInSocialNetwork({@required String email, @required AuthCredential credential}) async {
     try {
-      bool hasProvider = (await auth.fetchSignInMethodsForEmail(email: email)).contains(credential.providerId);
+      bool hasProvider = (await _auth.fetchSignInMethodsForEmail(email: email)).contains(credential.providerId);
 
       debugPrint('hasProvider ${credential.providerId}: $hasProvider');
       if (!hasProvider) {
-        final callable = fns.getHttpsCallable(functionName: 'login');
+        final callable = _fns.getHttpsCallable(functionName: 'login');
         HttpsCallableResult resp = await callable.call(<String, dynamic>{
           'email': email
         });
@@ -63,12 +63,12 @@ class Auth {
         debugPrint('token: ${resp.data}');
 
         if (resp.data != null) {
-          await auth.signInWithCustomToken(token: resp.data);
-          final user = await auth.currentUser();
+          await _auth.signInWithCustomToken(token: resp.data);
+          final user = await _auth.currentUser();
           return user.linkWithCredential(credential);
         }
       }
-      return auth.signInWithCredential(credential);
+      return _auth.signInWithCredential(credential);
     } on CloudFunctionsException catch (e) {
       throw e;
     } on PlatformException catch (e) {
@@ -82,8 +82,7 @@ class Auth {
   }
 
   Future<void> signOut(BuildContext context) {
-    Navigator.of(context)
-        .popUntil((route) => route.isFirst);
-    return auth.signOut();
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    return _auth.signOut();
   }
 }

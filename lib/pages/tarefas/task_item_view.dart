@@ -4,8 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:time_control/components/card/my_card.dart';
 import 'package:time_control/components/text/my_text.dart';
 import 'package:time_control/models/tarefa.dart';
-import 'package:time_control/pages/home/nova_tarefa_view.dart';
 import 'package:time_control/theme.dart';
+
+import 'nova_tarefa_view.dart';
 
 class TaskItemView extends StatelessWidget {
   final Tarefa tarefa;

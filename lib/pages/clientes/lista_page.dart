@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:time_control/components/buttons/my_fab.dart';
-import 'package:time_control/components/text/my_text.dart';
 import 'package:time_control/components/view/grid_item_view.dart';
 import 'package:time_control/components/view/progress_view.dart';
 import 'package:time_control/models/cliente.dart';
@@ -10,6 +9,8 @@ import 'package:time_control/models/cliente.dart';
 import 'novo_page.dart';
 import 'tags.dart';
 import 'ver_page.dart';
+
+List<Cliente> initialList;
 
 class ListaClientesPage extends StatefulWidget {
   static const routeName = '/clientes/lista';
@@ -78,36 +79,32 @@ class _ListaClienteContainerState extends State<ListaClienteContainer> {
   Widget _buildBody() {
     return StreamBuilder<List<Cliente>>(
       stream: Cliente.lista(widget.usuario.uid),
+      initialData: initialList,
       builder: (BuildContext context, AsyncSnapshot<List<Cliente>> snapshot) {
         if (snapshot.hasError) {
           return _buildCenterText('Error: ${snapshot.error}');
-        }
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return ProgressView(insidePage: true,);
-          default:
-            if (!snapshot.hasData) {
-              return _buildCenterText('Problema recebendo os dados');
-            } else {
-              if (snapshot.data.length == 0) {
-                return _buildCenterText('Você não possui nenhum cliente');
-              } else {
-                return CustomScrollView(
-                  controller: widget.controller,
-                  slivers: <Widget>[
-                    SliverPadding(
-                      padding: const EdgeInsets.all(20),
-                      sliver: SliverGrid.count(
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        crossAxisCount: 2,
-                        children: snapshot.data.map((cliente) => _buildItem(cliente)).toList(),
-                      ),
-                    ),
-                  ],
-                );
-              }
-            }
+        } else if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+          return ProgressView(insidePage: true,);
+        } else if (!snapshot.hasData) {
+          return _buildCenterText('Problema recebendo os dados');
+        } else if (snapshot.data.length == 0) {
+          return _buildCenterText('Você não possui nenhum cliente');
+        } else {
+          initialList = snapshot.data;
+          return CustomScrollView(
+            controller: widget.controller,
+            slivers: <Widget>[
+              SliverPadding(
+                padding: const EdgeInsets.all(20),
+                sliver: SliverGrid.count(
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  crossAxisCount: 2,
+                  children: snapshot.data.map((cliente) => _buildItem(cliente)).toList(),
+                ),
+              ),
+            ],
+          );
         }
       },
     );

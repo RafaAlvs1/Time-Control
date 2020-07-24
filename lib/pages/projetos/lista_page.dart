@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:time_control/components/buttons/my_fab.dart';
-import 'package:time_control/components/card/my_card.dart';
-import 'package:time_control/components/text/my_text.dart';
 import 'package:time_control/components/view/grid_item_view.dart';
 import 'package:time_control/components/view/progress_view.dart';
 import 'package:time_control/models/projeto.dart';
@@ -11,6 +9,8 @@ import 'package:time_control/pages/projetos/tags.dart';
 
 import 'novo_page.dart';
 import 'ver_page.dart';
+
+List<Projeto> initialList;
 
 class ListaProjetosPage extends StatefulWidget {
   static const routeName = '/projetos/lista';
@@ -53,37 +53,36 @@ class _ListaProjetosPageState extends State<ListaProjetosPage> {
   Widget _buildBody() {
     return StreamBuilder<List<Projeto>>(
       stream: Projeto.lista(widget.usuario.uid),
+      initialData: initialList,
       builder: (BuildContext context, AsyncSnapshot<List<Projeto>> snapshot) {
         if (snapshot.hasError) {
           return _buildCenterText('Error: ${snapshot.error}');
+        } else if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+          return ProgressView(insidePage: true,);
+        } else if (!snapshot.hasData) {
+          return _buildCenterText('Problema recebendo os dados');
+        } else {
+          initialList = snapshot.data;
+          if (snapshot.data.length == 0) {
+            return _buildCenterText('Você não possui nenhum projeto');
+          } else {
+            return CustomScrollView(
+              controller: _scrollController,
+              slivers: <Widget>[
+                SliverPadding(
+                  padding: const EdgeInsets.all(20),
+                  sliver: SliverGrid.count(
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    crossAxisCount: 2,
+                    children: snapshot.data.map((data) => _buildItem(data)).toList(),
+                  ),
+                ),
+              ],
+            );
+          }
         }
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return ProgressView(insidePage: true,);
-          default:
-            if (!snapshot.hasData) {
-              return _buildCenterText('Problema recebendo os dados');
-            } else {
-              if (snapshot.data.length == 0) {
-                return _buildCenterText('Você não possui nenhum projeto');
-              } else {
-                return CustomScrollView(
-                  controller: _scrollController,
-                  slivers: <Widget>[
-                    SliverPadding(
-                      padding: const EdgeInsets.all(20),
-                      sliver: SliverGrid.count(
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        crossAxisCount: 2,
-                        children: snapshot.data.map((data) => _buildItem(data)).toList(),
-                      ),
-                    ),
-                  ],
-                );
-              }
-            }
-        }
+
       },
     );
   }

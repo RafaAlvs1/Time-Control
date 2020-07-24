@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:time_control/components/buttons/my_buttons.dart';
-import 'package:time_control/components/card/my_card.dart';
 import 'package:time_control/models/tarefa.dart';
 
 class TimerCustom extends ChangeNotifier {
@@ -63,18 +62,11 @@ class Contador extends AnimatedWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MyCard(
-      child: Row(
-        children: <Widget>[
-          timer.isActive ? stop() : start(),
-        ],
-      ),
-    );
+    return timer.isActive ? stop() : start();
   }
 
   Widget start() {
     return MyRaisedButton(
-      labelText: 'Começar',
       icon: Icon(FontAwesomeIcons.playCircle),
       color: Colors.green,
       padding: EdgeInsets.zero,

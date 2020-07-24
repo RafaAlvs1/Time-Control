@@ -85,7 +85,6 @@ class Tarefa {
       await batch.commit();
 
       id = document.documentID;
-      print(document);
       return document.documentID;
     }
   }

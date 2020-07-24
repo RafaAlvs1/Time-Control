@@ -29,13 +29,7 @@ class _TaskItemInProgressView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: MyCard(
-        padding: EdgeInsets.zero,
-        child: Contador(tarefa),
-      ),
-    );
+    return Contador(tarefa);
   }
 }
 
